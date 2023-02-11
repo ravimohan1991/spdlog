@@ -341,6 +341,8 @@ public:
 
     std::vector<sink_ptr> &sinks();
 
+	void add_sink(sink_ptr a_sink);
+
     // error handler
     void set_error_handler(err_handler);
 

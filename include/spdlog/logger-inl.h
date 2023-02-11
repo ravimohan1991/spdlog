@@ -148,6 +148,11 @@ SPDLOG_INLINE std::vector<sink_ptr> &logger::sinks()
     return sinks_;
 }
 
+SPDLOG_INLINE void logger::add_sink(sink_ptr a_sink)
+{
+	sinks_.push_back(a_sink);
+}
+
 // error handler
 SPDLOG_INLINE void logger::set_error_handler(err_handler handler)
 {
