@@ -19,30 +19,30 @@
 #include <spdlog/details/log_msg.h>
 
 #ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
-    #ifndef _WIN32
-        #error SPDLOG_WCHAR_TO_UTF8_SUPPORT only supported on windows
-    #endif
-    #include <spdlog/details/os.h>
+#ifndef _WIN32
+#error SPDLOG_WCHAR_TO_UTF8_SUPPORT only supported on windows
+#endif
+#include <spdlog/details/os.h>
 #endif
 
 #include <vector>
 
 #ifndef SPDLOG_NO_EXCEPTIONS
-    #define SPDLOG_LOGGER_CATCH(location)                                                 \
-        catch (const std::exception &ex) {                                                \
-            if (location.filename) {                                                      \
-                err_handler_(fmt_lib::format(SPDLOG_FMT_STRING("{} [{}({})]"), ex.what(), \
-                                             location.filename, location.line));          \
-            } else {                                                                      \
-                err_handler_(ex.what());                                                  \
-            }                                                                             \
-        }                                                                                 \
-        catch (...) {                                                                     \
-            err_handler_("Rethrowing unknown exception in logger");                       \
-            throw;                                                                        \
-        }
+#define SPDLOG_LOGGER_CATCH(location)                                                 \
+    catch (const std::exception &ex) {                                                \
+        if (location.filename) {                                                      \
+            err_handler_(fmt_lib::format(SPDLOG_FMT_STRING("{} [{}({})]"), ex.what(), \
+                                         location.filename, location.line));          \
+        } else {                                                                      \
+            err_handler_(ex.what());                                                  \
+        }                                                                             \
+    }                                                                                 \
+    catch (...) {                                                                     \
+        err_handler_("Rethrowing unknown exception in logger");                       \
+        throw;                                                                        \
+    }
 #else
-    #define SPDLOG_LOGGER_CATCH(location)
+#define SPDLOG_LOGGER_CATCH(location)
 #endif
 
 namespace spdlog {
@@ -77,12 +77,20 @@ public:
 
     template <typename... Args>
     void log(source_loc loc, level::level_enum lvl, format_string_t<Args...> fmt, Args &&...args) {
-        log_(loc, lvl, details::to_string_view(fmt), std::forward<Args>(args)...);
+#ifdef SPDLOG_USE_STD_FORMAT
+        log_(loc, lvl, fmt.get(), std::forward<Args>(args)...);
+#else
+        log_(loc, lvl, fmt.str, std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void log(level::level_enum lvl, format_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(source_loc{}, lvl, fmt, std::forward<Args>(args)...);
+#else
+        log(source_loc{}, lvl, fmt.str, std::forward<Args>(args)...);
+#endif
     }
 
     template <typename T>
@@ -127,43 +135,71 @@ public:
 
     template <typename... Args>
     void trace(format_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::trace, fmt, std::forward<Args>(args)...);
+#else
+        log(level::trace, fmt.str, std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void debug(format_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::debug, fmt, std::forward<Args>(args)...);
+#else
+        log(level::debug, fmt.str, std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void info(format_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::info, fmt, std::forward<Args>(args)...);
+#else
+        log(level::info, fmt.str, std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void warn(format_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::warn, fmt, std::forward<Args>(args)...);
+#else
+        log(level::warn, fmt.str, std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void error(format_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::err, fmt, std::forward<Args>(args)...);
+#else
+        log(level::err, fmt.str, std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void critical(format_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::critical, fmt, std::forward<Args>(args)...);
+#else
+        log(level::critical, fmt.str, std::forward<Args>(args)...);
+#endif
     }
 
 #ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
     template <typename... Args>
     void log(source_loc loc, level::level_enum lvl, wformat_string_t<Args...> fmt, Args &&...args) {
-        log_(loc, lvl, details::to_string_view(fmt), std::forward<Args>(args)...);
+        log_(loc, lvl, fmt.get(), std::forward<Args>(args)...);
     }
 
     template <typename... Args>
     void log(level::level_enum lvl, wformat_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(source_loc{}, lvl, fmt, std::forward<Args>(args)...);
+#else
+        log(source_loc{}, lvl, fmt.get(), std::forward<Args>(args)...);
+#endif
     }
 
     void log(log_clock::time_point log_time,
@@ -199,32 +235,56 @@ public:
 
     template <typename... Args>
     void trace(wformat_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::trace, fmt, std::forward<Args>(args)...);
+#else
+        log(level::trace, fmt.get(), std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void debug(wformat_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::debug, fmt, std::forward<Args>(args)...);
+#else
+        log(level::debug, fmt.get(), std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void info(wformat_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::info, fmt, std::forward<Args>(args)...);
+#else
+        log(level::info, fmt.get(), std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void warn(wformat_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::warn, fmt, std::forward<Args>(args)...);
+#else
+        log(level::warn, fmt.get(), std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void error(wformat_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::err, fmt, std::forward<Args>(args)...);
+#else
+        log(level::err, fmt.get(), std::forward<Args>(args)...);
+#endif
     }
 
     template <typename... Args>
     void critical(wformat_string_t<Args...> fmt, Args &&...args) {
+#ifdef SPDLOG_USE_STD_FORMAT
         log(level::critical, fmt, std::forward<Args>(args)...);
+#else
+        log(level::critical, fmt.get(), std::forward<Args>(args)...);
+#endif
     }
 #endif
 
@@ -258,7 +318,7 @@ public:
         log(level::critical, msg);
     }
 
-    // return true logging is enabled for the given level.
+    // return true if logging is enabled for the given level.
     bool should_log(level::level_enum msg_level) const {
         return msg_level >= level_.load(std::memory_order_relaxed);
     }
@@ -377,5 +437,5 @@ void swap(logger &a, logger &b) noexcept;
 }  // namespace spdlog
 
 #ifdef SPDLOG_HEADER_ONLY
-    #include "logger-inl.h"
+#include "logger-inl.h"
 #endif
