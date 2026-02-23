@@ -13,7 +13,6 @@ file(GLOB_RECURSE HEADERFILES ${CMAKE_CURRENT_SOURCE_DIR}/include/spdlog/*.h)
 
 # Some preprocessor definitions
 add_compile_definitions(SPDLOG_COMPILED_LIB)
-add_compile_definitions(FMT_USE_NONTYPE_TEMPLATE_PARAMETERS=0)
 
 # Since Windows has exception with regards to Static/Dynamic libraries, we just compile a dummy
 if (BUILD_SHARED_LIBS)

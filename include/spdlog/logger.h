@@ -87,9 +87,9 @@ public:
     template <typename... Args>
     void log(level::level_enum lvl, format_string_t<Args...> fmt, Args &&...args) {
 #ifdef SPDLOG_USE_STD_FORMAT
-        log(source_loc{}, lvl, fmt, std::forward<Args>(args)...);
+        log_(source_loc{}, lvl, fmt.get(), std::forward<Args>(args)...);
 #else
-        log(source_loc{}, lvl, fmt.str, std::forward<Args>(args)...);
+        log_(source_loc{}, lvl, fmt.str, std::forward<Args>(args)...);
 #endif
     }
 
@@ -135,56 +135,44 @@ public:
 
     template <typename... Args>
     void trace(format_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::trace, fmt, std::forward<Args>(args)...);
-#else
-        log(level::trace, fmt.str, std::forward<Args>(args)...);
-#endif
+        {
+            log(level::trace, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void debug(format_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::debug, fmt, std::forward<Args>(args)...);
-#else
-        log(level::debug, fmt.str, std::forward<Args>(args)...);
-#endif
+        {
+            log(level::debug, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void info(format_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::info, fmt, std::forward<Args>(args)...);
-#else
-        log(level::info, fmt.str, std::forward<Args>(args)...);
-#endif
+        {
+            log(level::info, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void warn(format_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::warn, fmt, std::forward<Args>(args)...);
-#else
-        log(level::warn, fmt.str, std::forward<Args>(args)...);
-#endif
+        {
+            log(level::warn, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void error(format_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::err, fmt, std::forward<Args>(args)...);
-#else
-        log(level::err, fmt.str, std::forward<Args>(args)...);
-#endif
+        {
+            log(level::err, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void critical(format_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::critical, fmt, std::forward<Args>(args)...);
-#else
-        log(level::critical, fmt.str, std::forward<Args>(args)...);
-#endif
+        {
+            log(level::critical, fmt, std::forward<Args>(args)...);
+        }
     }
 
 #ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
@@ -196,9 +184,9 @@ public:
     template <typename... Args>
     void log(level::level_enum lvl, wformat_string_t<Args...> fmt, Args &&...args) {
 #ifdef SPDLOG_USE_STD_FORMAT
-        log(source_loc{}, lvl, fmt, std::forward<Args>(args)...);
+        log_(source_loc{}, lvl, fmt.get(), std::forward<Args>(args)...);
 #else
-        log(source_loc{}, lvl, fmt.get(), std::forward<Args>(args)...);
+        log_(source_loc{}, lvl, fmt.get(), std::forward<Args>(args)...);
 #endif
     }
 
@@ -235,56 +223,44 @@ public:
 
     template <typename... Args>
     void trace(wformat_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::trace, fmt, std::forward<Args>(args)...);
-#else
-        log(level::trace, fmt.get(), std::forward<Args>(args)...);
-#endif
+        {
+            log(level::trace, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void debug(wformat_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::debug, fmt, std::forward<Args>(args)...);
-#else
-        log(level::debug, fmt.get(), std::forward<Args>(args)...);
-#endif
+        {
+            log(level::debug, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void info(wformat_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::info, fmt, std::forward<Args>(args)...);
-#else
-        log(level::info, fmt.get(), std::forward<Args>(args)...);
-#endif
+        {
+            log(level::info, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void warn(wformat_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::warn, fmt, std::forward<Args>(args)...);
-#else
-        log(level::warn, fmt.get(), std::forward<Args>(args)...);
-#endif
+        {
+            log(level::warn, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void error(wformat_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::err, fmt, std::forward<Args>(args)...);
-#else
-        log(level::err, fmt.get(), std::forward<Args>(args)...);
-#endif
+        {
+            log(level::err, fmt, std::forward<Args>(args)...);
+        }
     }
 
     template <typename... Args>
     void critical(wformat_string_t<Args...> fmt, Args &&...args) {
-#ifdef SPDLOG_USE_STD_FORMAT
-        log(level::critical, fmt, std::forward<Args>(args)...);
-#else
-        log(level::critical, fmt.get(), std::forward<Args>(args)...);
-#endif
+        {
+            log(level::critical, fmt, std::forward<Args>(args)...);
+        }
     }
 #endif
 
@@ -439,3 +415,4 @@ void swap(logger &a, logger &b) noexcept;
 #ifdef SPDLOG_HEADER_ONLY
 #include "logger-inl.h"
 #endif
+
